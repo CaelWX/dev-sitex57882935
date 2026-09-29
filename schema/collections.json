@@ -1,0 +1,167 @@
+{
+  "_comment": "Source of truth for the D&D booking CMS collections. Created on the site via the Wix Data Collections REST API (POST /wix-data/v2/collections). Order matters: referenced collections come first. Wix adds system fields (_id, _createdDate, _updatedDate, _owner) automatically.",
+  "collections": [
+    {
+      "id": "EventSeries",
+      "displayName": "Event Series",
+      "displayField": "title",
+      "permissions": { "read": "ANYONE", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "title", "displayName": "Title", "type": "TEXT", "required": true },
+        { "key": "description", "displayName": "Description", "type": "TEXT" },
+        { "key": "venue", "displayName": "Venue", "type": "TEXT" },
+        { "key": "dayOfWeek", "displayName": "Day of Week (0=Sun)", "type": "NUMBER", "numberRange": { "min": 0, "max": 6 } },
+        { "key": "startTimeLocal", "displayName": "Start Time (local HH:mm)", "type": "TEXT" },
+        { "key": "endTimeLocal", "displayName": "End Time (local HH:mm)", "type": "TEXT" },
+        { "key": "timeZone", "displayName": "Time Zone", "type": "TEXT" },
+        { "key": "tableCount", "displayName": "Number of Tables", "type": "NUMBER", "numberRange": { "min": 1, "max": 50 } },
+        { "key": "defaultSeatsPerTable", "displayName": "Default Seats per Table", "type": "NUMBER", "numberRange": { "min": 1, "max": 20 } },
+        { "key": "isOneOff", "displayName": "One-off Event", "type": "BOOLEAN" },
+        { "key": "startsOn", "displayName": "Starts On", "type": "DATE" },
+        { "key": "endsOn", "displayName": "Ends On", "type": "DATE" },
+        { "key": "status", "displayName": "Status (active|paused|ended)", "type": "TEXT" },
+        { "key": "generatedThrough", "displayName": "Generated Through", "type": "DATE" }
+      ]
+    },
+    {
+      "id": "Occurrences",
+      "displayName": "Occurrences",
+      "displayField": "title",
+      "permissions": { "read": "ANYONE", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "series", "displayName": "Series", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "EventSeries" } } },
+        { "key": "localDate", "displayName": "Local Date", "type": "DATE" },
+        { "key": "startsAt", "displayName": "Starts At (UTC)", "type": "DATETIME" },
+        { "key": "endsAt", "displayName": "Ends At (UTC)", "type": "DATETIME" },
+        { "key": "title", "displayName": "Title", "type": "TEXT" },
+        { "key": "venue", "displayName": "Venue", "type": "TEXT" },
+        { "key": "description", "displayName": "Description", "type": "TEXT" },
+        { "key": "status", "displayName": "Status (scheduled|cancelled)", "type": "TEXT" },
+        { "key": "cancelReason", "displayName": "Cancel Reason", "type": "TEXT" },
+        { "key": "isCustomized", "displayName": "Customized by Admin", "type": "BOOLEAN" },
+        { "key": "hasActivity", "displayName": "Has Claims or Bookings", "type": "BOOLEAN" }
+      ]
+    },
+    {
+      "id": "Tables",
+      "displayName": "Tables",
+      "displayField": "name",
+      "permissions": { "read": "ANYONE", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "occurrence", "displayName": "Occurrence", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Occurrences" } } },
+        { "key": "tableNumber", "displayName": "Table Number", "type": "NUMBER" },
+        { "key": "name", "displayName": "Name", "type": "TEXT" },
+        { "key": "maxSeats", "displayName": "Max Seats", "type": "NUMBER", "numberRange": { "min": 1, "max": 20 } },
+        { "key": "status", "displayName": "Status (open|held|claimed)", "type": "TEXT" },
+        { "key": "currentClaimId", "displayName": "Current Claim ID", "type": "TEXT" },
+        { "key": "dmMemberId", "displayName": "DM Member ID", "type": "TEXT" },
+        { "key": "dmDisplayName", "displayName": "DM Display Name", "type": "TEXT" },
+        { "key": "gameTitle", "displayName": "Game Title", "type": "TEXT" },
+        { "key": "system", "displayName": "System / Edition", "type": "TEXT" },
+        { "key": "playerCap", "displayName": "Player Cap", "type": "NUMBER" },
+        { "key": "description", "displayName": "Description", "type": "TEXT" },
+        { "key": "contentNotes", "displayName": "Content Notes", "type": "TEXT" },
+        { "key": "seatsTaken", "displayName": "Seats Taken", "type": "NUMBER" },
+        { "key": "waitlistCount", "displayName": "Waitlist Count", "type": "NUMBER" }
+      ]
+    },
+    {
+      "id": "TableClaims",
+      "displayName": "Table Claims",
+      "displayField": "gameTitle",
+      "permissions": { "read": "ADMIN", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "table", "displayName": "Table", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Tables" } } },
+        { "key": "occurrence", "displayName": "Occurrence", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Occurrences" } } },
+        { "key": "dmMemberId", "displayName": "DM Member ID", "type": "TEXT" },
+        { "key": "dmDisplayName", "displayName": "DM Display Name", "type": "TEXT" },
+        { "key": "dmEmail", "displayName": "DM Email (normalized)", "type": "TEXT" },
+        { "key": "gameTitle", "displayName": "Game Title", "type": "TEXT" },
+        { "key": "system", "displayName": "System / Edition", "type": "TEXT" },
+        { "key": "playerCap", "displayName": "Player Cap", "type": "NUMBER" },
+        { "key": "description", "displayName": "Description", "type": "TEXT" },
+        { "key": "contentNotes", "displayName": "Content Notes", "type": "TEXT" },
+        { "key": "status", "displayName": "Status (pending|approved|denied|withdrawn|release_requested|released)", "type": "TEXT" },
+        { "key": "releaseReason", "displayName": "Release Reason", "type": "TEXT" },
+        { "key": "decisionReason", "displayName": "Decision Reason", "type": "TEXT" },
+        { "key": "decidedAt", "displayName": "Decided At", "type": "DATETIME" },
+        { "key": "batchId", "displayName": "Batch ID (multi-date request)", "type": "TEXT" }
+      ]
+    },
+    {
+      "id": "Bookings",
+      "displayName": "Bookings",
+      "displayField": "playerName",
+      "permissions": { "read": "ADMIN", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "table", "displayName": "Table", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Tables" } } },
+        { "key": "occurrence", "displayName": "Occurrence", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Occurrences" } } },
+        { "key": "seatNumber", "displayName": "Seat Number", "type": "NUMBER" },
+        { "key": "playerName", "displayName": "Player Name", "type": "TEXT" },
+        { "key": "email", "displayName": "Email (normalized)", "type": "TEXT" },
+        { "key": "contactId", "displayName": "Wix Contact ID", "type": "TEXT" },
+        { "key": "status", "displayName": "Status (confirmed|cancelled|removed|occurrence_cancelled)", "type": "TEXT" },
+        { "key": "source", "displayName": "Source (direct|waitlist|admin)", "type": "TEXT" },
+        { "key": "manageTokenHash", "displayName": "Manage Token Hash", "type": "TEXT" },
+        { "key": "cancelledAt", "displayName": "Cancelled At", "type": "DATETIME" }
+      ]
+    },
+    {
+      "id": "Waitlist",
+      "displayName": "Waitlist",
+      "displayField": "playerName",
+      "permissions": { "read": "ADMIN", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "table", "displayName": "Table", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Tables" } } },
+        { "key": "occurrence", "displayName": "Occurrence", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Occurrences" } } },
+        { "key": "playerName", "displayName": "Player Name", "type": "TEXT" },
+        { "key": "email", "displayName": "Email (normalized)", "type": "TEXT" },
+        { "key": "contactId", "displayName": "Wix Contact ID", "type": "TEXT" },
+        { "key": "status", "displayName": "Status (waiting|promoted|left|skipped)", "type": "TEXT" },
+        { "key": "promotedBooking", "displayName": "Promoted Booking", "type": "REFERENCE", "typeMetadata": { "reference": { "referencedCollectionId": "Bookings" } } },
+        { "key": "promotedAt", "displayName": "Promoted At", "type": "DATETIME" },
+        { "key": "manageTokenHash", "displayName": "Manage Token Hash", "type": "TEXT" }
+      ]
+    },
+    {
+      "id": "DMApplications",
+      "displayName": "DM Applications",
+      "displayField": "displayName",
+      "permissions": { "read": "ADMIN", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "memberId", "displayName": "Member ID", "type": "TEXT" },
+        { "key": "displayName", "displayName": "Display Name", "type": "TEXT" },
+        { "key": "experience", "displayName": "Experience", "type": "TEXT" },
+        { "key": "systems", "displayName": "Systems Run", "type": "TEXT" },
+        { "key": "notes", "displayName": "Notes", "type": "TEXT" },
+        { "key": "status", "displayName": "Status (pending|approved|denied|withdrawn)", "type": "TEXT" },
+        { "key": "decisionReason", "displayName": "Decision Reason", "type": "TEXT" },
+        { "key": "decidedAt", "displayName": "Decided At", "type": "DATETIME" }
+      ]
+    },
+    {
+      "id": "Locks",
+      "displayName": "Locks",
+      "displayField": "kind",
+      "permissions": { "read": "ADMIN", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "kind", "displayName": "Kind (claim|night|seat)", "type": "TEXT" },
+        { "key": "refId", "displayName": "Owning Record ID", "type": "TEXT" }
+      ]
+    },
+    {
+      "id": "AuditLog",
+      "displayName": "Audit Log",
+      "displayField": "action",
+      "permissions": { "read": "ADMIN", "insert": "ADMIN", "update": "ADMIN", "remove": "ADMIN" },
+      "fields": [
+        { "key": "action", "displayName": "Action", "type": "TEXT" },
+        { "key": "actorType", "displayName": "Actor Type (admin|dm|player|system)", "type": "TEXT" },
+        { "key": "actorId", "displayName": "Actor ID", "type": "TEXT" },
+        { "key": "entityType", "displayName": "Entity Type", "type": "TEXT" },
+        { "key": "entityId", "displayName": "Entity ID", "type": "TEXT" },
+        { "key": "details", "displayName": "Details", "type": "OBJECT" }
+      ]
+    }
+  ]
+}
