@@ -3,7 +3,7 @@
 
 import { Permissions, webMethod } from 'wix-web-module';
 import {
-  COLLECTIONS, CLAIM_STATUS, TABLE_STATUS, LOCK_KIND, lockKeys,
+  COLLECTIONS, CLAIM_STATUS, TABLE_STATUS, OCCURRENCE_STATUS, LOCK_KIND, lockKeys,
 } from './data/constants.js';
 import {
   getOrFail, insert, patch, query, find, acquireLock, releaseLock, newId,
@@ -100,6 +100,28 @@ export const submitClaims = webMethod(Permissions.SiteMember, handled(async (tab
     }
   }
   return { batchId, results };
+}));
+
+// For the "also claim this table on other dates" option: upcoming dates in the same series
+// where the table with the same number is still open.
+export const listSameTableOtherDates = webMethod(Permissions.SiteMember, handled(async (tableId) => {
+  await requireDM();
+  const table = await getTable(v.id(tableId, 'Table'));
+  const occ = await getOccurrence(table.occurrence);
+  if (!occ.series) return [];
+
+  const others = await find(
+    query(COLLECTIONS.OCCURRENCES).eq('series', occ.series).eq('status', OCCURRENCE_STATUS.SCHEDULED)
+      .gt('startsAt', new Date()).ne('_id', occ._id).ascending('startsAt'),
+    12,
+  );
+  const rows = await Promise.all(others.map(async (o) => {
+    const [t] = await find(query(COLLECTIONS.TABLES).eq('occurrence', o._id).eq('tableNumber', table.tableNumber), 1);
+    return t && t.status === TABLE_STATUS.OPEN
+      ? { tableId: t._id, tableName: t.name, occurrence: publicOccurrence(o) }
+      : null;
+  }));
+  return rows.filter(Boolean);
 }));
 
 // Withdraw a pending claim, release an approved one (24h+ before start),
